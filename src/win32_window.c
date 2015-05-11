@@ -637,7 +637,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int i;
 
             const int count = DragQueryFileW(hDrop, 0xffffffff, NULL, 0);
-            char** names = calloc(count, sizeof(char*));
+            char** names = (char**)calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(hDrop, &pt);
@@ -646,7 +646,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(hDrop, i, NULL, 0);
-                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+                WCHAR* buffer = (WCHAR*)calloc(length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(hDrop, i, buffer, length + 1);
                 names[i] = _glfwCreateUTF8FromWideString(buffer);
@@ -1111,6 +1111,17 @@ void _glfwPlatformPostEmptyEvent(void)
     PostMessage(window->win32.handle, WM_NULL, 0, 0);
 }
 
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
+{
+    if (!_glfw.win32.touch.available)
+        return;
+
+    if (enabled)
+        _glfw_RegisterTouchWindow(window->win32.handle, 0);
+    else
+        _glfw_UnregisterTouchWindow(window->win32.handle);
+}
+
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 {
     POINT pos;
@@ -1336,7 +1347,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
 
     free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString =
-        _glfwCreateUTF8FromWideString(GlobalLock(stringHandle));
+        _glfwCreateUTF8FromWideString((const WCHAR*)GlobalLock(stringHandle));
 
     GlobalUnlock(stringHandle);
     CloseClipboard();

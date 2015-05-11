@@ -412,9 +412,17 @@ void _glfwPlatformTerminate(void);
  */
 const char* _glfwPlatformGetVersionString(void);
 
+/*! @brief Sets whether touch input is enabled for the specified window.
+ *  @param[in] window The window whose touch input status to change.
+ *  @param[in] enabled @c GL_TRUE to enable touch input, or @c GL_FALSE to
+ *  disable it.
+ *  @ingroup platform
+ */
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled);
 /*! @copydoc glfwGetCursorPos
  *  @ingroup platform
  */
+
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
 
 /*! @copydoc glfwSetCursorPos
